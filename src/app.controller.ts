@@ -1,31 +1,53 @@
-import { Controller, Delete, Get, Post, Put } from "@nestjs/common";
+import {
+   Body,
+   Controller,
+   Delete,
+   Get,
+   HttpCode,
+   Param,
+   Post,
+   Put
+} from "@nestjs/common";
+import AppService, { ReportType } from "./app.service";
+import { ReportDto } from "./app.dto";
 
 @Controller("report/:type")
-class AppController {
+export default class AppController {
+   constructor(private readonly appService: AppService) {}
+
    @Get()
-   getAllReports() {
-      return [];
+   getAllReports(@Param("type") type: ReportType) {
+      return this.appService.getAllReports(type);
    }
 
    @Get(":id")
-   getReportById() {
-      return {};
+   getReportById(@Param("type") type: ReportType, @Param("id") id: string) {
+      return this.appService.getReportById(type, id);
    }
 
    @Post()
-   createReport() {
-      return "Created";
+   createReport(@Body() body: ReportDto, @Param("type") type: ReportType) {
+      return this.appService.createReport(body, type);
    }
 
    @Put(":id")
-   updateReportById() {
-      return "Updated";
+   updateReportById(
+      @Body() body: ReportDto,
+      @Param("id") id: string,
+      @Param("type") type: ReportType
+   ) {
+      const reportIndex = this.appService.findReportIndex(type, id);
+      if (reportIndex === -1) return;
+      return this.appService.updateReportById(body, reportIndex);
    }
 
+   @HttpCode(204)
    @Delete(":id")
-   deleteReportById() {
-      return "Deleted";
+   deleteReportById(@Param("type") type: ReportType, @Param("id") id: string) {
+      const reportIndex = this.appService.findReportIndex(type, id);
+      if (reportIndex === -1) return;
+      this.appService.deleteReportById(reportIndex);
+
+      return;
    }
 }
-
-export default AppController;
