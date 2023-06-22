@@ -1,4 +1,4 @@
-import { ReportType } from "./app.service";
+import { ReportType } from "./report/report.service";
 
 type ReportData = {
    report: {

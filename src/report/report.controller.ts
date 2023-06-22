@@ -9,35 +9,40 @@ import {
    Put
 } from "@nestjs/common";
 import { ReportService, ReportType } from "./report.service";
-import { ReportDto } from "./report.dto";
+import { CreateReportDto, ReportDto } from "./report.dto";
 
 @Controller("report/:type")
 export class ReportController {
    constructor(private readonly reportService: ReportService) {}
 
    @Get()
-   getAllReports(@Param("type") type: ReportType) {
+   getAllReports(@Param("type") type: ReportType): ReportDto[] {
       return this.reportService.getAllReports(type);
    }
 
    @Get(":id")
-   getReportById(@Param("type") type: ReportType, @Param("id") id: string) {
+   getReportById(
+      @Param("type") type: ReportType,
+      @Param("id") id: string
+   ): ReportDto {
       return this.reportService.getReportById(type, id);
    }
 
    @Post()
-   createReport(@Body() body: ReportDto, @Param("type") type: ReportType) {
+   createReport(
+      @Body() body: CreateReportDto,
+      @Param("type") type: ReportType
+   ): ReportDto {
       return this.reportService.createReport(body, type);
    }
 
    @Put(":id")
    updateReportById(
-      @Body() body: ReportDto,
+      @Body() body: CreateReportDto,
       @Param("id") id: string,
       @Param("type") type: ReportType
-   ) {
+   ): ReportDto {
       const reportIndex = this.reportService.findReportIndex(type, id);
-      if (reportIndex === -1) return;
       return this.reportService.updateReportById(body, reportIndex);
    }
 
@@ -45,7 +50,6 @@ export class ReportController {
    @Delete(":id")
    deleteReportById(@Param("type") type: ReportType, @Param("id") id: string) {
       const reportIndex = this.reportService.findReportIndex(type, id);
-      if (reportIndex === -1) return;
       this.reportService.deleteReportById(reportIndex);
 
       return;
